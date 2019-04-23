@@ -8,17 +8,7 @@ class MyCharactersWidget extends StatelessWidget {
       appBar: AppBar(
         title: new Text(Translations.text("characterList")),
       ),
-      body: Center(
-        child: MaterialButton(
-            child: new Text("button"),
-            onPressed: () {
-              showDatePicker(
-                  context: context,
-                  initialDate: DateTime.now(),
-                  firstDate: DateTime(2018),
-                  lastDate: DateTime(2030));
-            }),
-      ),
+      body: Center(),
     );
   }
 }
