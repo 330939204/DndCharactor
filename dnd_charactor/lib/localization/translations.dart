@@ -6,19 +6,10 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter/widgets.dart';
 
 class Translations {
-  factory Translations() => _getInstance();
-
-  static Translations get instance => _getInstance();
-  static Translations _instance;
+  factory Translations() => _instance;
+  static Translations _instance = Translations._internal();
 
   Translations._internal();
-
-  static Translations _getInstance() {
-    if (_instance == null) {
-      _instance = new Translations._internal();
-    }
-    return _instance;
-  }
 
   Locale locale;
 
@@ -34,13 +25,17 @@ class Translations {
   }
 
   static String text(String key) =>
-      _getInstance()._localizedValue[key] ?? '$key not found';
+      _instance._localizedValue[key] ?? '$key not found';
 
   static Future<Translations> load(Locale locale) async {
-    String jsonContent =
-        await rootBundle.loadString("locale/i18n_${locale.languageCode}.json");
-    _getInstance().setUp(locale, jsonContent);
-    return _getInstance();
+    try {
+      if (locale.languageCode != _instance.locale?.languageCode) {
+        String jsonContent = await rootBundle
+            .loadString("locale/i18n_${locale.languageCode}.json");
+        _instance.setUp(locale, jsonContent);
+      }
+    } catch (e) {}
+    return _instance;
   }
 
   get currentLanguage => locale.languageCode;
@@ -48,6 +43,7 @@ class Translations {
 
 class TranslationDelegate extends LocalizationsDelegate<Translations> {
   static TranslationDelegate delegate = TranslationDelegate();
+
   const TranslationDelegate();
 
   @override
@@ -57,5 +53,5 @@ class TranslationDelegate extends LocalizationsDelegate<Translations> {
   Future<Translations> load(Locale locale) => Translations.load(locale);
 
   @override
-  bool shouldReload(LocalizationsDelegate<Translations> old) => false;
+  bool shouldReload(LocalizationsDelegate<Translations> old) => true;
 }

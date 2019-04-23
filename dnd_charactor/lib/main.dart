@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
@@ -8,12 +6,54 @@ import 'widget/myCharacters.dart';
 
 void main() => runApp(MyApp());
 
-class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
+class MyApp extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() {
+    return AppState();
+  }
+}
+
+typedef void LocaleChangedCallback(Locale locale);
+
+class AppSetting {
+  static const Locale ZH = Locale('zh', 'CH');
+  static const Locale EN = Locale('en', 'US');
+  List<Locale> supportedLocales = [ZH, EN];
+
+  static final AppSetting _appSetting = new AppSetting._internal();
+
+  factory AppSetting() => _appSetting;
+
+  AppSetting._internal();
+
+  LocaleChangedCallback changeLocale;
+}
+
+AppSetting appSetting = new AppSetting();
+
+class AppState extends State<MyApp> {
+  Locale _locale;
+
+  @override
+  void initState() {
+    super.initState();
+    appSetting.changeLocale = (Locale locale) {
+      setState(() {
+        _locale = locale;
+        Translations.load(locale);
+      });
+    };
+  }
+
   @override
   Widget build(BuildContext context) {
+    AppSetting();
     return MaterialApp(
-      title: 'Flutter Demo',
+      // ignore: non_constant_identifier_names
+      onGenerateTitle: (BuildContext) {
+        return Translations.text("myApp");
+      },
+      locale: _locale,
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -28,11 +68,11 @@ class MyApp extends StatelessWidget {
       ),
       home: MyCharactersWidget(),
       localizationsDelegates: [
+        TranslationDelegate.delegate,
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
-        TranslationDelegate.delegate
       ],
-      supportedLocales: [const Locale('zh', 'CH'), const Locale('en', 'US')],
+      supportedLocales: AppSetting().supportedLocales,
     );
   }
 }
