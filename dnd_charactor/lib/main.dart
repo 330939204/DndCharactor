@@ -48,7 +48,6 @@ class AppState extends State<MyApp> {
       {
         setState(() {
           _locale = locale;
-          Translations.load(locale);
         });
       }
     };
@@ -59,8 +58,8 @@ class AppState extends State<MyApp> {
     AppSetting();
     return MaterialApp(
       // ignore: non_constant_identifier_names
-      onGenerateTitle: (BuildContext) {
-        return Translations.text("myApp");
+      onGenerateTitle: (BuildContext buildInContext) {
+        return Translations.of(buildInContext).text("myApp");
       },
       locale: _locale,
       theme: ThemeData(

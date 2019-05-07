@@ -6,39 +6,27 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter/widgets.dart';
 
 class Translations {
-  factory Translations() => _instance;
-  static Translations _instance = Translations._internal();
-
-  Translations._internal();
-
-  Locale locale;
-
   Map<dynamic, dynamic> _localizedValue;
 
-  setUp(Locale locale, String jsonContent) {
-    this.locale = locale;
-    _localizedValue = json.decode(jsonContent);
+  Translations(this._localizedValue);
+
+  String text(String key) {
+    return _localizedValue[key];
   }
 
   static Translations of(BuildContext context) {
-    return Localizations.of(context, Translations);
+    return Localizations.of<Translations>(context, Translations);
   }
-
-  static String text(String key) =>
-      _instance._localizedValue[key] ?? '$key not found';
 
   static Future<Translations> load(Locale locale) async {
     try {
-      if (locale.languageCode != _instance.locale?.languageCode) {
-        String jsonContent = await rootBundle
-            .loadString("locale/i18n_${locale.languageCode}.json");
-        _instance.setUp(locale, jsonContent);
-      }
-    } catch (e) {}
-    return _instance;
+      String jsonContent = await rootBundle
+          .loadString("locale/i18n_${locale.languageCode}.json");
+      return Translations(json.decode(jsonContent));
+    } catch (e) {
+      return null;
+    }
   }
-
-  get currentLanguage => locale.languageCode;
 }
 
 class TranslationDelegate extends LocalizationsDelegate<Translations> {

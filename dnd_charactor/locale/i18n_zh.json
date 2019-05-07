@@ -1,4 +1,6 @@
 {
   "myApp": "DND 5E 自动角色卡",
-  "characterList": "角色列表"
+  "characterList": "角色列表",
+  "zh": "中文",
+  "en": "英文"
 }
